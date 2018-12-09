@@ -8,7 +8,7 @@ language: go
 go:
   - "1.8"
   - "1.9"
-#  - "tip"
+
 
 services:
   - docker
@@ -39,10 +39,6 @@ env:
     - MAKEFLAGS="-j4"
     - GOARCH=amd64
     - DB_HOST=127.0.0.1
-  matrix:
-    - name: "benchmark"
-      script:
-        - make benchmark test-main
 
 install:
   - mkdir -p $GOPATH/src/upper.io
@@ -57,3 +53,11 @@ before_script:
 
 #script:
 #  - ${TEST_CMD}
+
+matrix:
+  include:
+
+    - name: "benchmark"
+      script:
+        - make benchmark test-main
+
