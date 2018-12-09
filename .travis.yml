@@ -60,3 +60,9 @@ matrix:
       script:
         - make benchmark test-main
 
+    - name: "postgresql"
+      go:
+        - "1.8"
+        - "1.9"
+      script:
+        - make -C postgresql test
