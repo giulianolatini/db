@@ -5,6 +5,8 @@ notifications:
 
 language: go
 
+go:
+  - "1.11"
 
 services:
   - docker
@@ -53,16 +55,18 @@ before_script:
 matrix:
   include:
 
-    - name: "benchmark"
-      go:
-        - "1.8"
-        - "1.9"
+    - name: "common"
       script:
-        - make benchmark test-main
+        - make test-main
+
+    - name: "benchmark"
+      script:
+        - make benchmark
 
     - name: "postgresql"
-      go:
-        - "1.8"
-        - "1.9"
       script:
         - make -C postgresql test
+
+    - name: "mysql"
+      script:
+        - make -C mysql test
