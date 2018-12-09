@@ -40,8 +40,9 @@ env:
     - GOARCH=amd64
     - DB_HOST=127.0.0.1
   matrix:
-    - TEST_CMD="make benchmark test-main"
-    - TEST_CMD="make test-adapters"
+    - name: "benchmark"
+      script:
+        - make benchmark test-main
 
 install:
   - mkdir -p $GOPATH/src/upper.io
@@ -54,5 +55,5 @@ install:
 before_script:
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
-script:
-  - ${TEST_CMD}
+#script:
+#  - ${TEST_CMD}
