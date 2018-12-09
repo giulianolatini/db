@@ -70,3 +70,15 @@ matrix:
     - name: "mysql"
       script:
         - make -C mysql test
+
+    - name: "sqlite"
+      script:
+        - make -C sqlite test
+
+    - name: "mssql"
+      script:
+        - make -C mssql test
+
+    - name: "mongo"
+      script:
+        - make -C mongo test
