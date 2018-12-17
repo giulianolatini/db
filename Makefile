@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-WAPPER  ?= all
+WRAPPER  ?= all
 DB_HOST ?= 127.0.0.1
 
 TEST_FLAGS ?=

@@ -2,6 +2,7 @@ package exql
 
 import (
 	"bytes"
+	"reflect"
 	"sync"
 	"text/template"
 
@@ -75,6 +76,47 @@ type Template struct {
 	ComparisonOperator map[db.ComparisonOperator]string
 
 	*cache.Cache
+}
+
+func mustCompile(layout *Template, templateText string, data interface{}) string {
+	var b bytes.Buffer
+
+	/*
+		v, ok := templateCache.Get(text)
+		if !ok {
+			v = template.Must(template.New("").Parse(text))
+			templateCache.Set(text, v)
+		}
+	*/
+	v := template.
+		Must(template.New("").
+			Funcs(map[string]interface{}{
+				"defined": func(in Fragment) bool {
+					if in == nil || reflect.ValueOf(in).IsNil() {
+						return false
+					}
+					if check, ok := in.(hasIsEmpty); ok {
+						if check.IsEmpty() {
+							return false
+						}
+					}
+					return true
+				},
+				"compile": func(in Fragment) (string, error) {
+					s, err := layout.doCompile(in)
+					if err != nil {
+						return "", err
+					}
+					return s, nil
+				},
+			}).
+			Parse(templateText))
+
+	if err := v.Execute(&b, data); err != nil {
+		panic("There was an error compiling the following template:\n" + templateText + "\nError was: " + err.Error())
+	}
+
+	return b.String()
 }
 
 func mustParse(text string, data interface{}) string {

@@ -22,6 +22,13 @@ func GroupByColumns(columns ...Fragment) *GroupBy {
 	return &GroupBy{Columns: JoinColumns(columns...)}
 }
 
+func (g *GroupBy) IsEmpty() bool {
+	if g == nil || g.Columns == nil {
+		return true
+	}
+	return g.Columns.(hasIsEmpty).IsEmpty()
+}
+
 // Compile transforms the GroupBy into an equivalent SQL representation.
 func (g *GroupBy) Compile(layout *Template) (compiled string, err error) {
 
@@ -34,10 +41,10 @@ func (g *GroupBy) Compile(layout *Template) (compiled string, err error) {
 		if err != nil {
 			return "", err
 		}
+
 		data := groupByT{
 			GroupColumns: columns,
 		}
-
 		compiled = mustParse(layout.GroupByLayout, data)
 	}
 

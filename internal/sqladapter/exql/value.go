@@ -2,6 +2,7 @@ package exql
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -11,12 +12,31 @@ type ValueGroups struct {
 	hash   hash
 }
 
+func (vg *ValueGroups) IsEmpty() bool {
+	if vg == nil || len(vg.Values) < 1 {
+		return true
+	}
+	for i := range vg.Values {
+		if !vg.Values[i].IsEmpty() {
+			return false
+		}
+	}
+	return true
+}
+
 var _ = Fragment(&ValueGroups{})
 
 // Values represents an array of Value.
 type Values struct {
 	Values []Fragment
 	hash   hash
+}
+
+func (vs *Values) IsEmpty() bool {
+	if vs == nil || len(vs.Values) < 1 {
+		return true
+	}
+	return false
 }
 
 var _ = Fragment(&Values{})
@@ -42,6 +62,11 @@ func NewValueGroup(v ...Fragment) *Values {
 // Hash returns a unique identifier for the struct.
 func (v *Value) Hash() string {
 	return v.hash.Hash(v)
+}
+
+func (v *Value) IsEmpty() bool {
+	log.Printf("v: %#v", v)
+	return false
 }
 
 // Compile transforms the Value into an equivalent SQL representation.

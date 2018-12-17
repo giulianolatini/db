@@ -103,23 +103,25 @@ const (
 				{{end}}
 
 
-				{{if .Columns}}
-					{{.Columns}}
+				{{if defined .Columns}}
+					{{.Columns | compile}}
 				{{else}}
 					*
 				{{end}}
 
-				{{if .Table}}
-					FROM {{.Table}}
+				{{if defined .Table}}
+					FROM {{.Table | compile}}
 				{{end}}
 
-				{{.Joins}}
+				{{.Joins | compile}}
 
-				{{.Where}}
+				{{.Where | compile}}
 
-				{{.GroupBy}}
+				{{if defined .GroupBy}}
+					{{.GroupBy | compile}}
+				{{end}}
 
-				{{.OrderBy}}
+				{{.OrderBy | compile}}
 
 		{{if or .Limit .Offset}}
 			) __q1)  __q0 WHERE rnum > {{if gt .Offset 0}}{{.Offset}}{{else}}0{{end}}
@@ -127,47 +129,51 @@ const (
   `
 	adapterDeleteLayout = `
     DELETE
-      FROM {{.Table}}
-      {{.Where}}
+      FROM {{.Table | compile}}
+      {{.Where | compile}}
   `
 	adapterUpdateLayout = `
     UPDATE
-      {{.Table}}
-    SET {{.ColumnValues}}
-      {{ .Where }}
+      {{.Table | compile}}
+    SET {{.ColumnValues | compile}}
+      {{.Where | compile}}
   `
 
 	adapterSelectCountLayout = `
     SELECT
       COUNT(1) AS _t
-    FROM {{.Table}}
-      {{.Where}}
+    FROM {{.Table | compile}}
+      {{.Where | compile}}}
   `
 
 	adapterInsertLayout = `
-    INSERT INTO {{.Table}}
-      {{if .Columns }}({{.Columns}}){{end}}
+    INSERT INTO {{.Table | compile}}
+      {{if .Columns }}({{.Columns | compile}}){{end}}
+      {{if .Returning }}
+				OUTPUT
+				{{range $key, $value := .Returning.Columns.Columns}}
+					{{- if $key}},{{end}}
+					[inserted].{{ $value | compile }}
+				{{end}}
+			{{end}}
     VALUES
-    {{if .Values}}
-      {{.Values}}
+    {{if defined .Values}}
+      {{.Values | compile}}
     {{else}}
       (DEFAULT)
-    {{end}}
-    {{if .Returning}}
-      RETURNING {{.Returning}}
     {{end}}
   `
 
 	adapterTruncateLayout = `
-    TRUNCATE TABLE {{.Table}}
+    TRUNCATE TABLE {{.Table | compile}}
   `
 
 	adapterDropDatabaseLayout = `
-    DROP DATABASE {{.Database}}
+    DROP DATABASE {{.Database | compile}}
   `
 
 	adapterDropTableLayout = `
-    DROP TABLE {{.Table}}
+    DROP TABLE {{.Table | compile}}
   `
 
 	adapterGroupByLayout = `
