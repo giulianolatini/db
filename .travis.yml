@@ -61,7 +61,7 @@ env:
   - TEST_CMD="make -C mssql test"
 
 script:
-  - bash -c $TEST_TARGET
+  - bash -c $TEST_CMD
 
 #matrix:
 #  include:
