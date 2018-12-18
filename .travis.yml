@@ -51,8 +51,12 @@ install:
 before_script:
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
+env:
+  - TEST_TARGET=test-main
+  - TEST_TARGET=benchmark
+
 script:
-  - make test-main
+  - make $TEST_TARGET
 
 #matrix:
 #  include:
