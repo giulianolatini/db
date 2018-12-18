@@ -51,34 +51,36 @@ install:
 before_script:
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
-matrix:
-  include:
+script:
+  - make test-main
 
-    - name: "common"
-      go: "1.11"
-      script:
-        - make test-main
-
-    - name: "benchmark"
-      script:
-        - make benchmark
-
-    - name: "postgresql"
-      script:
-        - make -C postgresql test
-
-    - name: "mysql"
-      script:
-        - make -C mysql test
-
-    - name: "sqlite"
-      script:
-        - make -C sqlite test
-
-    - name: "mssql"
-      script:
-        - make -C mssql test
-
-    - name: "mongo"
-      script:
-        - make -C mongo test
+#matrix:
+#  include:
+#
+#    - name: "common"
+#      script:
+#        - make test-main
+#
+#    - name: "benchmark"
+#      script:
+#        - make benchmark
+#
+#    - name: "postgresql"
+#      script:
+#        - make -C postgresql test
+#
+#    - name: "mysql"
+#      script:
+#        - make -C mysql test
+#
+#    - name: "sqlite"
+#      script:
+#        - make -C sqlite test
+#
+#    - name: "mssql"
+#      script:
+#        - make -C mssql test
+#
+#    - name: "mongo"
+#      script:
+#        - make -C mongo test
