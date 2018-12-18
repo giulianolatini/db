@@ -62,6 +62,14 @@ env:
 
 script:
   - bash -c $TEST_CMD
+  - TEST_CMD=-C postgresql test
+
+matrix:
+  include:
+    - addons:
+        postgresql: "9.6"
+    - addons:
+        postgresql: "9.5"
 
 #matrix:
 #  include:
