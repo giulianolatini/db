@@ -6,6 +6,8 @@ notifications:
 language: go
 
 go:
+  - "1.9"
+  - "1.10"
   - "1.11"
 
 services:
@@ -48,9 +50,6 @@ install:
 
 before_script:
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
-
-#script:
-#  - ${TEST_CMD}
 
 matrix:
   include:
