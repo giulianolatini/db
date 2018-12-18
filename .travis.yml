@@ -55,6 +55,7 @@ matrix:
   include:
 
     - name: "common"
+      go: "1.11"
       script:
         - make test-main
 
