@@ -13,10 +13,8 @@ go:
 services:
   - docker
   - mongodb
-  - postgresql
 
 addons:
-  postgresql: 9.6
   apt:
     sources:
     - mongodb-3.0-precise
@@ -27,10 +25,12 @@ addons:
 
 before_install:
   - sudo service mysql stop
+  - docker pull postgres:9.6
   - docker pull microsoft/mssql-server-linux:latest
   - docker pull mysql:5.7
-  - docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 1433:1433 -d microsoft/mssql-server-linux:latest
-  - docker run -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 3306:3306 --name mysql mysql:5.7
+  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p 5432:5432 --name postgres
+  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 1433:1433 -d microsoft/mssql-server-linux:latest
+  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 3306:3306 --name mysql mysql:5.7
   - docker ps -a
   - sleep 30
 
@@ -62,14 +62,6 @@ env:
 
 script:
   - bash -c $TEST_CMD
-  - TEST_CMD=-C postgresql test
-
-matrix:
-  include:
-    - addons:
-        postgresql: "9.6"
-    - addons:
-        postgresql: "9.5"
 
 #matrix:
 #  include:
