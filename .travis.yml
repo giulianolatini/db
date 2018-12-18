@@ -52,11 +52,16 @@ before_script:
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
 env:
-  - TEST_TARGET=test-main
-  - TEST_TARGET=benchmark
+  - TEST_CMD="make test-main"
+  - TEST_CMD="make benchmark"
+  - TEST_CMD="make -C postgresql test"
+  - TEST_CMD="make -C mysql test"
+  - TEST_CMD="make -C sqlite test"
+  - TEST_CMD="make -C ql test"
+  - TEST_CMD="make -C mssql test"
 
 script:
-  - make $TEST_TARGET
+  - bash -c $TEST_TARGET
 
 #matrix:
 #  include:
