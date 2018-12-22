@@ -11,6 +11,9 @@ env:
     - MONGO_VERSION=3.0
     - MYSQL_VERSION=5.7
     - MSSQL_VERSION=latest
+  matrix:
+    - TEST_CMD="make test"
+    - TEST_CMD="make benchmark"
 
 notifications:
   email: false
@@ -41,11 +44,7 @@ install:
   - go get -v github.com/cznic/ql/ql
   - export TRAVIS_BUILD_DIR=$GOPATH/src/upper.io/db.v3
 
-env:
-  - TEST_CMD="make test"
-  - TEST_CMD="make benchmark"
-
-script:
+before_script:
   - docker pull postgres:$POSTGRESQL_VERSION &
   - docker pull microsoft/mssql-server-linux:$MSSQL_VERSION &
   - docker pull mongo:$MONGO_VERSION &
@@ -58,4 +57,6 @@ script:
   - wait
   - sleep 10
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
+
+script:
   - bash -c "$TEST_CMD"
