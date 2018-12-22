@@ -25,7 +25,7 @@ addons:
 
 before_install:
   - sudo service mysql stop
-  - sudo service postgres stop
+  - sudo service postgresql stop
   - docker pull postgres:9.6
   - docker pull microsoft/mssql-server-linux:latest
   - docker pull mysql:5.7
