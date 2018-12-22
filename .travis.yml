@@ -55,7 +55,7 @@ before_script:
   - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p $DB_HOST:3306:3306 --name mysql mysql:$MYSQL_VERSION &
   - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p $DB_HOST:27017:27017 --name mongo mongo:$MONGO_VERSION &
   - wait
-  - sleep 20
+  - sleep 30
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
 script:
