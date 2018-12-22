@@ -45,7 +45,7 @@ env:
   - TEST_CMD="make test"
   - TEST_CMD="make benchmark"
 
-before_script:
+script:
   - docker pull postgres:$POSTGRESQL_VERSION &
   - docker pull microsoft/mssql-server-linux:$MSSQL_VERSION &
   - docker pull mongo:$MONGO_VERSION &
@@ -58,6 +58,4 @@ before_script:
   - wait
   - sleep 10
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
-
-script:
   - bash -c "$TEST_CMD"
