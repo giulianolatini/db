@@ -33,10 +33,10 @@ before_install:
   - docker pull mongo:3.0 &
   - docker pull mysql:5.7 &
   - wait
-  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p 5432:5432 --name postgres postgres:9.6 &
-  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 1433:1433 microsoft/mssql-server-linux:latest &
-  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 3306:3306 --name mysql mysql:5.7 &
-  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p 27017:27017 --name mongo mongo:3.0 &
+  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p 0.0.0.0:5432:5432 --name postgres postgres:9.6 &
+  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 0.0.0.0:1433:1433 microsoft/mssql-server-linux:latest &
+  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 0.0.0.0:3306:3306 --name mysql mysql:5.7 &
+  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p 0.0.0.0:27017:27017 --name mongo mongo:3.0 &
   - wait
   - sleep 10
 
