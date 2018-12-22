@@ -32,17 +32,6 @@ before_install:
   - sudo service mysql stop &
   - sudo service postgresql stop &
   - wait
-  - docker pull postgres:$POSTGRESQL_VERSION &
-  - docker pull microsoft/mssql-server-linux:$MSSQL_VERSION &
-  - docker pull mongo:$MONGO_VERSION &
-  - docker pull mysql:$MYSQL_VERSION &
-  - wait
-  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p $DB_HOST:5432:5432 --name postgres postgres:$POSTGRESQL_VERSION &
-  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' -p $DB_HOST:1433:1433 --name microsoft/mssql-server-linux:$MSSQL_VERSION &
-  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p $DB_HOST:3306:3306 --name mysql mysql:$MYSQL_VERSION &
-  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p $DB_HOST:27017:27017 --name mongo mongo:$MONGO_VERSION &
-  - wait
-  - sleep 10
 
 install:
   - mkdir -p $GOPATH/src/upper.io
@@ -57,7 +46,17 @@ env:
   - TEST_CMD="make benchmark"
 
 before_script:
-  - echo $TEST_CMD
+  - docker pull postgres:$POSTGRESQL_VERSION &
+  - docker pull microsoft/mssql-server-linux:$MSSQL_VERSION &
+  - docker pull mongo:$MONGO_VERSION &
+  - docker pull mysql:$MYSQL_VERSION &
+  - wait
+  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p $DB_HOST:5432:5432 --name postgres postgres:$POSTGRESQL_VERSION &
+  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' -p $DB_HOST:1433:1433 --name microsoft/mssql-server-linux:$MSSQL_VERSION &
+  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p $DB_HOST:3306:3306 --name mysql mysql:$MYSQL_VERSION &
+  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p $DB_HOST:27017:27017 --name mongo mongo:$MONGO_VERSION &
+  - wait
+  - sleep 10
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
 script:
