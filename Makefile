@@ -1,9 +1,9 @@
-SHELL := /bin/bash
+SHELL         := /bin/bash
 
-WRAPPER  ?= all
-DB_HOST ?= 127.0.0.1
+WRAPPER       ?= all
+DB_HOST       ?= 127.0.0.1
 
-TEST_FLAGS ?=
+TEST_FLAGS    ?=
 
 export DB_HOST
 export WRAPPER
@@ -26,18 +26,10 @@ test-libs: test-lib test-internal
 
 test-adapters: test-adapter-postgresql test-adapter-mysql test-adapter-sqlite test-adapter-mssql test-adapter-ql test-adapter-mongo
 
-reset-db:
-	$(MAKE) -C postgresql reset-db && \
-	$(MAKE) -C mysql reset-db && \
-	$(MAKE) -C sqlite reset-db && \
-	$(MAKE) -C mssql reset-db && \
-	$(MAKE) -C ql reset-db && \
-	$(MAKE) -C mongo reset-db
-
 test-main: reset-db
 	go test $(TEST_FLAGS) -v ./tests/...
 
-test: test-adapters test-libs test-main
+test: test-libs test-main test-adapters
 
 test-adapter-%:
-	$(MAKE) -C $* test || exit 1;
+	($(MAKE) -C $* test || exit 1)

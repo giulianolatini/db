@@ -1,9 +1,15 @@
 sudo: required
 
+language: go
+
+env:
+  global:
+    - MAKEFLAGS="-j4"
+    - GOARCH=amd64
+    - DB_HOST=127.0.0.1
+
 notifications:
   email: false
-
-language: go
 
 go:
   - "1.9"
@@ -12,34 +18,27 @@ go:
 
 services:
   - docker
-  - mongodb
 
 addons:
   apt:
-    sources:
-    - mongodb-3.0-precise
     packages:
     - freetds-bin
-    - mongodb-org-server
-    - mongodb-org-shell
 
 before_install:
-  - sudo service mysql stop
-  - sudo service postgresql stop
-  - docker pull postgres:9.6
-  - docker pull microsoft/mssql-server-linux:latest
-  - docker pull mysql:5.7
-  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p 5432:5432 --name postgres postgres:9.6
-  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 1433:1433 microsoft/mssql-server-linux:latest
-  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 3306:3306 --name mysql mysql:5.7
-  - docker ps -a
-  - sleep 30
-
-env:
-  global:
-    - MAKEFLAGS="-j4"
-    - GOARCH=amd64
-    - DB_HOST=127.0.0.1
+  - sudo service mysql stop &
+  - sudo service postgresql stop &
+  - wait
+  - docker pull postgres:9.6 &
+  - docker pull microsoft/mssql-server-linux:latest &
+  - docker pull mongo:3.0 &
+  - docker pull mysql:5.7 &
+  - wait
+  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p 5432:5432 --name postgres postgres:9.6 &
+  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 1433:1433 microsoft/mssql-server-linux:latest &
+  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 3306:3306 --name mysql mysql:5.7 &
+  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p 27017:27017 --name mongo mongo:3.0 &
+  - wait
+  - sleep 10
 
 install:
   - mkdir -p $GOPATH/src/upper.io
@@ -53,44 +52,8 @@ before_script:
   - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
 env:
-  - TEST_CMD="make test-main"
+  - TEST_CMD="make test"
   - TEST_CMD="make benchmark"
-  - TEST_CMD="make -C postgresql test"
-  - TEST_CMD="make -C mysql test"
-  - TEST_CMD="make -C sqlite test"
-  - TEST_CMD="make -C ql test"
-  - TEST_CMD="make -C mssql test"
 
 script:
   - bash -c $TEST_CMD
-
-#matrix:
-#  include:
-#
-#    - name: "common"
-#      script:
-#        - make test-main
-#
-#    - name: "benchmark"
-#      script:
-#        - make benchmark
-#
-#    - name: "postgresql"
-#      script:
-#        - make -C postgresql test
-#
-#    - name: "mysql"
-#      script:
-#        - make -C mysql test
-#
-#    - name: "sqlite"
-#      script:
-#        - make -C sqlite test
-#
-#    - name: "mssql"
-#      script:
-#        - make -C mssql test
-#
-#    - name: "mongo"
-#      script:
-#        - make -C mongo test
