@@ -8,6 +8,8 @@ TEST_FLAGS    ?=
 export DB_HOST
 export WRAPPER
 
+test: test-libs test-main test-adapters
+
 benchmark-lib:
 	go test -v -benchtime=500ms -bench=. ./lib/...
 
@@ -30,8 +32,6 @@ test-main:
 	go test $(TEST_FLAGS) -v ./tests/...
 
 reset-db: reset-db-postgresql reset-db-mysql reset-db-sqlite reset-db-mssql reset-db-ql reset-db-mongo
-
-test: test-libs test-main test-adapters
 
 test-adapter-%:
 	($(MAKE) -C $* test || exit 1)

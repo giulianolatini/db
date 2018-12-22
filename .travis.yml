@@ -56,4 +56,4 @@ env:
   - TEST_CMD="make benchmark"
 
 script:
-  - bash -c $TEST_CMD
+  - bash -c "$TEST_CMD"
