@@ -7,6 +7,10 @@ env:
     - MAKEFLAGS="-j4"
     - GOARCH=amd64
     - DB_HOST=127.0.0.1
+    - POSTGRESQL_VERSION=9.6
+    - MONGO_VERSION=3.0
+    - MYSQL_VERSION=5.7
+    - MSSQL_VERSION=latest
 
 notifications:
   email: false
@@ -28,15 +32,15 @@ before_install:
   - sudo service mysql stop &
   - sudo service postgresql stop &
   - wait
-  - docker pull postgres:9.6 &
-  - docker pull microsoft/mssql-server-linux:latest &
-  - docker pull mongo:3.0 &
-  - docker pull mysql:5.7 &
+  - docker pull postgres:$POSTGRESQL_VERSION &
+  - docker pull microsoft/mssql-server-linux:$MSSQL_VERSION &
+  - docker pull mongo:$MONGO_VERSION &
+  - docker pull mysql:$MYSQL_VERSION &
   - wait
-  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p 0.0.0.0:5432:5432 --name postgres postgres:9.6 &
-  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' --name mssql -p 0.0.0.0:1433:1433 microsoft/mssql-server-linux:latest &
-  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p 0.0.0.0:3306:3306 --name mysql mysql:5.7 &
-  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p 0.0.0.0:27017:27017 --name mongo mongo:3.0 &
+  - docker run --rm -d -e 'POSTGRES_USER=upperio_tests' -e 'POSTGRES_PASSWORD=upperio_secret' -p $DB_HOST:5432:5432 --name postgres postgres:$POSTGRESQL_VERSION &
+  - docker run --rm -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=my$Password' -p $DB_HOST:1433:1433 --name microsoft/mssql-server-linux:$MSSQL_VERSION &
+  - docker run --rm -d -e "MYSQL_USER=upperio_tests" -e "MYSQL_PASSWORD=upperio_secret" -e "MYSQL_ALLOW_EMPTY_PASSWORD=1" -e "MYSQL_DATABASE=upperio_tests" -p $DB_HOST:3306:3306 --name mysql mysql:$MYSQL_VERSION &
+  - docker run --rm -d -e "MONGO_USER=upperio_tests" -e "MONGO_PASSWORD=upperio_secret" -e "MONGO_DATABASE=upperio_tests" -p $DB_HOST:27017:27017 --name mongo mongo:$MONGO_VERSION &
   - wait
   - sleep 10
 
@@ -48,12 +52,13 @@ install:
   - go get -v github.com/cznic/ql/ql
   - export TRAVIS_BUILD_DIR=$GOPATH/src/upper.io/db.v3
 
-before_script:
-  - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
-
 env:
   - TEST_CMD="make test"
   - TEST_CMD="make benchmark"
+
+before_script:
+  - echo $TEST_CMD
+  - docker exec -it mysql bash -c 'mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql'
 
 script:
   - bash -c "$TEST_CMD"
